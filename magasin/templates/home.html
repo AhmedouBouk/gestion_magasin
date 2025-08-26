@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>magasin</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <style>
+    /* Mobile tabs positioning */
+    @media (max-width: 639px) {
+      .mobile-tabs-container {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        padding: 8px;
+        box-shadow: var(--shadow-md);
+        z-index: 100;
+        width: calc(100% - 32px);
+        margin: 0 16px;
+      }
+      
+      .main-content {
+        padding-top: 80px;
+      }
+    }
+
+    .mobile-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    
+    .mobile-tab {
+      padding: 8px 16px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    
+    .mobile-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .section {
+      margin-bottom: 32px;
+    }
+    
+    .section.hidden {
+      display: none;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .main-content {
+      padding: 24px 16px;
+    }
+    
+    .dashboard-header {
+      margin-bottom: 24px;
+    }
+    
+    .add-button {
+      margin-left: auto;
+    }
+    
+    /* Responsive adjustments */
+    @media (min-width: 640px) {
+      .mobile-tabs-container { display: none; }
+      .main-content { padding-top: 24px; }
+    }
+    
+    @media (min-width: 992px) {
+      .main-content { padding: 24px; }
+    }
+    
+    @media (max-width: 768px) {
+      .section-header { 
+        flex-direction: column; 
+        align-items: stretch; 
+      }
+      
+      .add-button {
+        margin-left: 0;
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+          </svg>
+        </div>
+        <span>Magasin</span>
+      </div>
+      
+      <!-- Desktop Navigation Tabs -->
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-section="categories">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 4H4c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM10 15H4c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3c0-1.1-.9-2-2-2zM21 4h-6c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM21 15h-6c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3c0-1.1-.9-2-2-2z"/>
+          </svg>
+          Catégories
+        </button>
+        <button class="nav-tab" data-section="produits">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          Produits
+        </button>
+      </div>
+      
+      <!-- Logout Button (Always visible) -->
+      <div class="navbar-controls">
+        <form method="post" action="{% url 'deconnexion' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+            <span class="logout-text">Déconnexion</span>
+          </button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Mobile Tabs (positioned outside navbar-container for proper mobile positioning) -->
+    <div class="mobile-tabs-container">
+      <div class="mobile-tabs">
+        <button class="mobile-tab active" data-section="categories">
+          Catégories
+        </button>
+        <button class="mobile-tab" data-section="produits">
+          Produits
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      
+      <!-- Categories Section -->
+      <section class="section" id="categories-section">
+        <div class="section-header">
+          <a href="{% url 'categorie_creer' %}" class="btn btn-primary add-button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Nouvelle Catégorie
+          </a>
+        </div>
+        
+        <div class="data-container">
+          {% if categories %}
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nom de la Catégorie</th>
+                    <th style="width: 200px; text-align: center;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for c in categories %}
+                  <tr>
+                    <td>
+                      <div class="item-name">{{ c.nom }}</div>
+                    </td>
+                    <td>
+                      <div class="actions">
+                        <a href="{% url 'categorie_modifier' c.pk %}" class="btn btn-sm btn-warning">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                          </svg>
+                          Modifier
+                        </a>
+                        <a href="{% url 'categorie_supprimer' c.pk %}" class="btn btn-sm btn-danger delete-btn">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                          </svg>
+                          Supprimer
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M10 4H4c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">Aucune catégorie</h3>
+              <p class="empty-description">
+                Commencez par créer votre première catégorie pour organiser vos produits.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+      
+      <!-- Products Section -->
+      <section class="section hidden" id="produits-section">
+        <div class="section-header">
+          <a href="{% url 'produit_creer' %}" class="btn btn-primary add-button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Nouveau Produit
+          </a>
+        </div>
+        
+        <div class="data-container">
+          {% if produits %}
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nom du Produit</th>
+                    <th>Catégorie</th>
+                    <th style="width: 200px; text-align: center;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for p in produits %}
+                  <tr>
+                    <td>
+                      <div class="item-name">{{ p.nom }}</div>
+                    </td>
+                    <td>
+                      <div class="category-badge">{{ p.categorie.nom }}</div>
+                    </td>
+                    <td>
+                      <div class="actions">
+                        <a href="{% url 'produit_modifier' p.pk %}" class="btn btn-sm btn-warning">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                          </svg>
+                          Modifier
+                        </a>
+                        <a href="{% url 'produit_supprimer' p.pk %}" class="btn btn-sm btn-danger delete-btn">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                          </svg>
+                          Supprimer
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <h3 class="empty-title">Aucun produit</h3>
+              <p class="empty-description">
+                Ajoutez votre premier produit pour commencer à gérer votre catalogue.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Navigation functionality
+    function switchSection(sectionName) {
+      // Hide all sections
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.add('hidden');
+      });
+      
+      // Show selected section
+      const targetSection = document.getElementById(sectionName + '-section');
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+      
+      // Update desktop tabs
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-section') === sectionName) {
+          tab.classList.add('active');
+        }
+      });
+      
+      // Update mobile tabs
+      document.querySelectorAll('.mobile-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-section') === sectionName) {
+          tab.classList.add('active');
+        }
+      });
+    }
+    
+    // Tab event listeners
+    document.querySelectorAll('.nav-tab, .mobile-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        const section = this.getAttribute('data-section');
+        switchSection(section);
+      });
+    });
+    
+    // Delete confirmation
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.')) {
+          e.preventDefault();
+        }
+      });
+    });
+    
+    console.log('Dashboard initialized successfully!');
+  </script>
+</body>
+</html>
