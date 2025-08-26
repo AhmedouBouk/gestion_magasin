@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Categorie(models.Model):
     nom = models.CharField(max_length=100, unique=True)
 
@@ -11,13 +12,62 @@ class Categorie(models.Model):
     def __str__(self):
         return self.nom
 
+
+class Localisation(models.Model):
+    nom = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = "localisation"
+        verbose_name_plural = "localisations"
+        ordering = ["nom"]
+
+    def __str__(self):
+        return self.nom
+
+
+class Etat(models.Model):
+    nom = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = "état"
+        verbose_name_plural = "états"
+        ordering = ["nom"]
+
+    def __str__(self):
+        return self.nom
+
+
 class Produit(models.Model):
     nom = models.CharField(max_length=150)
-    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, related_name="produits")
+
+    # ⚠️ defaults=1 to satisfy existing rows during migration (option 2)
+    # Assumes rows with id=1 will exist (via the init script below)
+    categorie = models.ForeignKey(
+        Categorie,
+        on_delete=models.PROTECT,
+        related_name="produits",
+        default=1,
+    )
+    localisation = models.ForeignKey(
+        Localisation,
+        on_delete=models.PROTECT,
+        related_name="produits",
+        default=1,
+    )
+    etat = models.ForeignKey(
+        Etat,
+        on_delete=models.PROTECT,
+        related_name="produits",
+        default=1,
+    )
+
+    reference_modele = models.CharField(max_length=150, blank=True)
+    quantite = models.PositiveIntegerField(default=1)
+    observations = models.TextField(blank=True)
 
     class Meta:
         ordering = ["nom"]
-        unique_together = ("nom", "categorie")
+        unique_together = ("nom", "categorie", "localisation")
 
     def __str__(self):
-        return f"{self.nom} ({self.categorie})"
+        return f"{self.nom} / {self.categorie} / {self.localisation}"

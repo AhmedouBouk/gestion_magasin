@@ -7,88 +7,107 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'style.css' %}">
   <style>
+    /* Reset and base styles */
+    * {
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-elev, #f8fafc);
+      color: var(--text, #1e293b);
+    }
+    
+    /* Main container - allows natural scrolling */
     .form-page {
-      min-height: calc(100vh - var(--nav-h));
-      background: var(--bg-elev);
-      padding: 24px 16px;
+      min-height: 100vh;
+      padding: 16px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
     
     .form-container {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
+      background: var(--bg, white);
+      border: 1px solid var(--border, #e2e8f0);
+      border-radius: var(--radius-lg, 12px);
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
       width: 100%;
-      max-width: 500px;
-      padding: 32px;
+      max-width: 960px;
+      padding: 24px;
+      margin-top: 20px;
     }
     
     .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
     
     .form-icon {
-      width: 48px;
-      height: 48px;
-      background: var(--primary);
-      border-radius: var(--radius);
+      width: 40px;
+      height: 40px;
+      background: var(--primary, #3b82f6);
+      border-radius: var(--radius, 8px);
       display: grid;
       place-items: center;
-      margin: 0 auto 16px;
       color: white;
+      flex-shrink: 0;
     }
     
     .form-title {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 600;
-      color: var(--text);
-      margin-bottom: 8px;
+      color: var(--text, #1e293b);
+      margin: 0;
     }
     
     .form-subtitle {
-      color: var(--text-muted);
+      color: var(--text-muted, #64748b);
       font-size: 14px;
-    }
-    
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-    }
-    
-    .btn-full {
-      flex: 1;
-      padding: 12px 16px;
-      justify-content: center;
+      margin-top: 4px;
     }
     
     /* Django form styling */
+    .django-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    
     .django-form p {
-      margin-bottom: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
     }
     
     .django-form label {
-      display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-weight: 500;
-      color: var(--text);
+      color: var(--text, #1e293b);
+      font-size: 14px;
     }
     
     .django-form input, 
     .django-form select, 
     .django-form textarea {
       width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      transition: var(--transition);
-      background: var(--bg);
-      color: var(--text);
+      padding: 12px 16px;
+      border: 1px solid var(--border, #e2e8f0);
+      border-radius: var(--radius, 8px);
+      font-size: 16px; /* Prevents iOS zoom */
+      line-height: 1.5;
+      transition: all 0.2s ease;
+      background: var(--bg, white);
+      color: var(--text, #1e293b);
       font-family: inherit;
     }
     
@@ -96,12 +115,15 @@
     .django-form select:focus, 
     .django-form textarea:focus {
       outline: none;
-      border-color: var(--primary);
-      box-shadow: var(--ring);
+      border-color: var(--primary, #3b82f6);
+      box-shadow: var(--ring, 0 0 0 3px rgba(59, 130, 246, 0.1));
     }
     
     .django-form select {
       cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23374151' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
       background-position: right 12px center;
       background-repeat: no-repeat;
@@ -112,39 +134,96 @@
     .django-form textarea {
       resize: vertical;
       min-height: 100px;
+      grid-column: 1 / -1; /* Span full width */
+    }
+    
+    .django-form input.error,
+    .django-form select.error,
+    .django-form textarea.error {
+      border-color: var(--danger, #ef4444);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
     }
     
     .errorlist {
       list-style: none;
-      margin: 6px 0 0 0;
+      margin: 8px 0 0 0;
       padding: 0;
     }
     
     .errorlist li {
-      color: var(--danger);
-      font-size: 12px;
+      color: var(--danger, #ef4444);
+      font-size: 13px;
       margin-top: 4px;
     }
     
+    /* Button styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: var(--radius, 8px);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 44px; /* Good touch target */
+    }
+    
+    .btn-primary {
+      background: var(--primary, #3b82f6);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-hover, #2563eb);
+    }
+    
+    .btn-secondary {
+      background: var(--secondary, #f1f5f9);
+      color: var(--text, #1e293b);
+      border: 1px solid var(--border, #e2e8f0);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--secondary-hover, #e2e8f0);
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      grid-column: 1 / -1;
+    }
+    
+    .btn-full {
+      flex: 1;
+    }
+    
     .loading {
-      opacity: 0.6;
+      opacity: 0.7;
       cursor: not-allowed;
       pointer-events: none;
     }
     
+    /* Notification styles */
     .notification {
       position: fixed;
       top: 20px;
       right: 20px;
-      background: var(--success);
+      background: var(--success, #10b981);
       color: white;
-      padding: 12px 16px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-lg);
+      padding: 16px 20px;
+      border-radius: var(--radius, 8px);
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
       transform: translateX(400px);
       transition: transform 0.3s ease;
-      z-index: 1001;
-      max-width: 300px;
+      z-index: 1000;
+      max-width: 320px;
+      font-size: 14px;
     }
     
     .notification.show {
@@ -152,51 +231,91 @@
     }
     
     .notification.error {
-      background: var(--danger);
+      background: var(--danger, #ef4444);
+    }
+    
+    .notification button {
+      background: none;
+      border: none;
+      color: white;
+      margin-left: 12px;
+      cursor: pointer;
+      opacity: 0.8;
+      font-size: 18px;
+      padding: 0;
+      line-height: 1;
+    }
+    
+    .notification button:hover {
+      opacity: 1;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .django-form {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      
+      .form-container {
+        margin-top: 0;
+        padding: 20px;
+      }
+      
+      .form-page {
+        padding: 12px;
+        align-items: stretch;
+      }
     }
     
     @media (max-width: 480px) {
       .form-page {
-        padding: 16px;
+        padding: 8px;
       }
       
       .form-container {
-        padding: 24px;
+        padding: 16px;
+        border-radius: var(--radius, 8px);
+      }
+      
+      .form-header {
+        margin-bottom: 20px;
+      }
+      
+      .form-title {
+        font-size: 18px;
       }
       
       .btn-group {
         flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      
+      .django-form input,
+      .django-form select,
+      .django-form textarea {
+        if (isPhoneOrSmall) {
+          container.style.transform = 'none';
+          return;
+        }
+
+        const padding = 32; /* desktop/tablet outer padding */
+        const vv = window.visualViewport;
+        const vw = vv ? vv.width : window.innerWidth;
+        const vh = vv ? vv.height : window.innerHeight;
+        const availW = Math.max(320, vw - padding);
+        const availH = Math.max(320, vh - padding);
+      }
+      
+      .notification.show {
+        transform: translateY(0);
       }
     }
+    
+    /* ... */
   </style>
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="container navbar-container">
-      <div class="brand">
-        <div class="brand-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-          </svg>
-        </div>
-        <span>Magasin</span>
-      </div>
-      
-      <div class="navbar-controls">
-        <form method="post" action="{% url 'deconnexion' %}">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-            </svg>
-            <span class="logout-text">Déconnexion</span>
-          </button>
-        </form>
-      </div>
-    </div>
-  </nav>
-
   <div class="form-page">
     <div class="form-container">
       <div class="form-header">
@@ -205,8 +324,10 @@
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
           </svg>
         </div>
-        <h2 class="form-title">Ajouter un élément</h2>
-        <p class="form-subtitle">Remplissez les informations ci-dessous</p>
+        <div>
+          <h2 class="form-title">Ajouter un élément</h2>
+          <p class="form-subtitle">Remplissez les informations ci-dessous</p>
+        </div>
       </div>
       
       <form method="post" class="django-form" id="addForm">
@@ -236,6 +357,7 @@
       const form = document.getElementById('addForm');
       const submitBtn = document.getElementById('submitBtn');
       
+      // Form submission handling
       form.addEventListener('submit', function(e) {
         const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
         let isValid = true;
@@ -255,14 +377,22 @@
           return;
         }
         
+        // Show loading state
         submitBtn.classList.add('loading');
-        submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Ajout en cours...';
+        submitBtn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="animation: spin 1s linear infinite;">
+            <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>
+          </svg>
+          Ajout en cours...
+        `;
         
+        // Simulate success (remove in production)
         setTimeout(() => {
           showNotification('Élément ajouté avec succès !', 'success');
         }, 500);
       });
       
+      // Real-time validation
       const inputs = form.querySelectorAll('input, select, textarea');
       inputs.forEach(input => {
         input.addEventListener('input', function() {
@@ -270,8 +400,24 @@
             this.classList.remove('error');
           }
         });
+        
+        // Prevent form submission on Enter for text inputs (except textarea)
+        if (input.type !== 'textarea') {
+          input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const nextInput = getNextInput(this);
+              if (nextInput) {
+                nextInput.focus();
+              } else {
+                form.submit();
+              }
+            }
+          });
+        }
       });
       
+      // Keyboard shortcuts
       document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           form.submit();
@@ -281,27 +427,43 @@
         }
       });
       
+      // Auto-focus first input
       const firstInput = form.querySelector('input, select, textarea');
       if (firstInput) {
-        setTimeout(() => firstInput.focus(), 300);
+        setTimeout(() => firstInput.focus(), 100);
+      }
+      
+      // Helper function to get next input
+      function getNextInput(currentInput) {
+        const inputs = Array.from(form.querySelectorAll('input, select, textarea'));
+        const currentIndex = inputs.indexOf(currentInput);
+        return inputs[currentIndex + 1] || null;
       }
     });
     
+    // Notification system
     function showNotification(message, type = 'success') {
+      // Remove existing notifications
       const existingNotifications = document.querySelectorAll('.notification');
       existingNotifications.forEach(n => n.remove());
-      
-      const notification = document.createElement('div');
+      const vwCheck = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const isPhoneOrSmall = vwCheck <= 640;
+      const container = document.body;
+      if (isPhoneOrSmall) {
+        container.style.transform = 'none';
+      }
       notification.className = `notification ${type}`;
       notification.innerHTML = `
         ${message}
-        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;margin-left:8px;cursor:pointer;opacity:0.7">×</button>
+        <button onclick="this.parentElement.remove()" aria-label="Fermer">×</button>
       `;
       
       document.body.appendChild(notification);
       
+      // Show notification
       setTimeout(() => notification.classList.add('show'), 100);
       
+      // Auto-hide after 4 seconds
       setTimeout(() => {
         if (notification.parentElement) {
           notification.classList.remove('show');
@@ -309,6 +471,16 @@
         }
       }, 4000);
     }
+    
+    // Add spinning animation for loading spinner
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>

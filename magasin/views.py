@@ -2,35 +2,72 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, CreateView, UpdateView
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-
-from .models import Categorie, Produit
+from django.db.models import Q
+from .models import Categorie, Produit, Etat, Localisation
 from .forms import FormulaireCategorie, FormulaireProduit
 
 
+# --- Auth ---
 class ConnexionView(LoginView):
-    # tes templates sont directement dans magasin/templates/
     template_name = "login.html"
 
 
 class DeconnexionView(LogoutView):
-    pass
+    next_page = reverse_lazy("connexion")
 
 
+# --- Accueil (Dashboard) ---
 @method_decorator(login_required, name="dispatch")
 class AccueilView(TemplateView):
-    # page unique qui affiche les listes
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["categories"] = Categorie.objects.all().order_by("nom")
-        ctx["produits"] = Produit.objects.select_related("categorie").all().order_by("nom")
+        produits = Produit.objects.all()
+        categories = Categorie.objects.all()
+        etats = Etat.objects.all()
+        localisations = Localisation.objects.all()
+
+        # Récupération des filtres (GET)
+        request = self.request
+        search = request.GET.get("search", "").strip()
+        categorie_id = request.GET.get("categorie", "").strip()
+        etat_id = request.GET.get("etat", "").strip()
+        localisation_id = request.GET.get("localisation", "").strip()
+
+        # Application des filtres
+        if search:
+            produits = produits.filter(
+                Q(nom__icontains=search)
+                | Q(reference_modele__icontains=search)
+                | Q(observations__icontains=search)
+            )
+        if categorie_id:
+            produits = produits.filter(categorie_id=categorie_id)
+        if etat_id:
+            produits = produits.filter(etat_id=etat_id)
+        if localisation_id:
+            produits = produits.filter(localisation_id=localisation_id)
+
+        # Contexte
+        ctx.update(
+            {
+                "categories": categories,
+                "etats": etats,
+                "localisations": localisations,
+                "produits": produits,
+                "search": search,
+                "categorie_id": categorie_id,
+                "etat_id": etat_id,
+                "localisation_id": localisation_id,
+            }
+        )
         return ctx
 
 
-# ---------- Catégories ----------
+# --- Catégories ---
 @method_decorator(login_required, name="dispatch")
 class CategorieCreer(CreateView):
     model = Categorie
@@ -48,13 +85,13 @@ class CategorieModifier(UpdateView):
 
 
 @login_required
-def categorie_supprimer(request, pk: int):
-    categorie = get_object_or_404(Categorie, pk=pk)
-    categorie.delete()
+def categorie_supprimer(request, pk):
+    cat = get_object_or_404(Categorie, pk=pk)
+    cat.delete()
     return redirect("accueil")
 
 
-# ---------- Produits ----------
+# --- Produits ---
 @method_decorator(login_required, name="dispatch")
 class ProduitCreer(CreateView):
     model = Produit
@@ -72,7 +109,16 @@ class ProduitModifier(UpdateView):
 
 
 @login_required
-def produit_supprimer(request, pk: int):
-    produit = get_object_or_404(Produit, pk=pk)
-    produit.delete()
+def produit_supprimer(request, pk):
+    prod = get_object_or_404(Produit, pk=pk)
+    prod.delete()
     return redirect("accueil")
+
+
+@login_required
+def accueil(request):
+    # Cette vue n'est plus utilisée car les filtres sont gérés dans AccueilView.
+    # Conservée uniquement si référencée ailleurs.
+    from django.shortcuts import render
+    produits = Produit.objects.all()
+    return render(request, "home.html", {"produits": produits})

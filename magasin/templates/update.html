@@ -7,13 +7,22 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'style.css' %}">
   <style>
-    .form-page {
-      min-height: calc(100vh - var(--nav-h));
+    /* <CHANGE> Removed all overflow restrictions and scrollbar hiding */
+    html, body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
       background: var(--bg-elev);
-      padding: 24px 16px;
+      color: var(--text);
+    }
+    
+    /* <CHANGE> Changed from fixed positioning to natural document flow */
+    .form-page {
+      min-height: 100vh;
+      padding: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: var(--bg-elev);
     }
     
     .form-container {
@@ -22,31 +31,36 @@
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-lg);
       width: 100%;
-      max-width: 500px;
-      padding: 32px;
+      max-width: 960px;
+      padding: 24px;
+      margin: auto;
     }
     
     .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
     
     .form-icon {
-      width: 48px;
-      height: 48px;
+      width: 36px;
+      height: 36px;
       background: var(--warning);
       border-radius: var(--radius);
       display: grid;
       place-items: center;
-      margin: 0 auto 16px;
+      margin: 0;
       color: white;
     }
     
     .form-title {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 600;
       color: var(--text);
-      margin-bottom: 8px;
+      margin: 0;
     }
     
     .form-subtitle {
@@ -133,19 +147,57 @@
       flex: 1;
       padding: 12px 16px;
       justify-content: center;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      text-align: center;
     }
     
-    /* Django form styling */
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background: color-mix(in srgb, var(--warning) 90%, black);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-elev);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+    }
+    
+    /* <CHANGE> Updated Django form to use CSS Grid that stacks naturally on mobile */
+    .django-form {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
     .django-form p {
-      margin-bottom: 20px;
-      position: relative;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
     }
     
     .django-form label {
-      display: block;
       margin-bottom: 6px;
       font-weight: 500;
       color: var(--text);
+      font-size: 14px;
     }
     
     .django-form input, 
@@ -155,11 +207,13 @@
       padding: 12px;
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      font-size: 14px;
-      transition: var(--transition);
+      font-size: 16px; /* <CHANGE> Prevent iOS zoom */
+      line-height: 1.4;
+      transition: all 0.2s ease;
       background: var(--bg);
       color: var(--text);
       font-family: inherit;
+      box-sizing: border-box;
     }
     
     .django-form input:focus, 
@@ -178,6 +232,9 @@
     
     .django-form select {
       cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23374151' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
       background-position: right 12px center;
       background-repeat: no-repeat;
@@ -188,6 +245,7 @@
     .django-form textarea {
       resize: vertical;
       min-height: 100px;
+      grid-column: 1 / -1; /* <CHANGE> Span full width */
     }
     
     .errorlist {
@@ -235,53 +293,55 @@
       background: var(--success);
     }
     
-    @media (max-width: 480px) {
+    /* <CHANGE> Mobile-first responsive design */
+    @media (max-width: 768px) {
+      .django-form {
+        grid-template-columns: 1fr;
+      }
+      
       .form-page {
-        padding: 16px;
+        padding: 12px;
+        align-items: flex-start;
+        min-height: 100vh;
       }
       
       .form-container {
-        padding: 24px;
+        padding: 16px;
+        margin-top: 0;
       }
       
       .btn-group {
         flex-direction: column;
+        gap: 12px;
       }
       
       .object-info {
         flex-direction: column;
         text-align: center;
+        gap: 8px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .form-page {
+        padding: 8px;
+      }
+      
+      .form-container {
+        padding: 12px;
+      }
+      
+      .form-header {
+        margin-bottom: 16px;
+      }
+      
+      .form-title {
+        font-size: 18px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="container navbar-container">
-      <div class="brand">
-        <div class="brand-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-          </svg>
-        </div>
-        <span>Magasin</span>
-      </div>
-      
-      <div class="navbar-controls">
-        <form method="post" action="{% url 'deconnexion' %}">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-            </svg>
-            <span class="logout-text">Déconnexion</span>
-          </button>
-        </form>
-      </div>
-    </div>
-  </nav>
-
   <div class="form-page">
     <div class="form-container">
       <div class="form-header">
@@ -291,23 +351,10 @@
           </svg>
         </div>
         <h2 class="form-title">Modifier l'élément</h2>
-        <p class="form-subtitle">Apportez vos modifications ci-dessous</p>
-      </div>
-      
-      <div class="object-info">
-        <div class="object-info-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-        </div>
-        <div class="object-info-text">
-          <div class="object-name">{{ object }}</div>
-          <div class="object-meta">Élément en cours de modification</div>
-        </div>
       </div>
       
       <div class="changes-summary" id="changesSummary">
-        <div class="changes-title">Modifications détectées</div>
+        <div class="changes-title">Modifications détectées :</div>
         <ul class="changes-list" id="changesList"></ul>
       </div>
       
@@ -316,13 +363,13 @@
         {{ form.as_p }}
         
         <div class="btn-group">
-          <button type="submit" class="btn btn-warning btn-full" id="submitBtn">
+          <button type="submit" class="btn-warning btn-full" id="submitBtn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 013.75 3.75v1.875C14.25 7.206 15.044 8 16 8s1.75-.794 1.75-1.875V3.75A5.25 5.25 0 0012.5-1.5h-.375a3.375 3.375 0 00-3.375 3.375V3.75A.75.75 0 019.5 4.5v15a.75.75 0 01-.75.75H3a.75.75 0 01-.75-.75V4.5A.75.75 0 013 3.75h4.5z"/>
             </svg>
             Mettre à jour
           </button>
-          <a href="javascript:history.back()" class="btn btn-secondary btn-full">
+          <a href="javascript:history.back()" class="btn-secondary btn-full">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
             </svg>
@@ -334,6 +381,7 @@
   </div>
 
   <script>
+    // <CHANGE> Removed all scaling and viewport fitting logic
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('updateForm');
       const submitBtn = document.getElementById('submitBtn');
@@ -485,4 +533,4 @@
     }
   </script>
 </body>
-</html> 
+</html>

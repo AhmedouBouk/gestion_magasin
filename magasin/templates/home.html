@@ -7,6 +7,8 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'style.css' %}">
   <style>
+    /* Prevent iOS zoom on focus */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     /* Mobile-specific navbar fixes */
     .navbar-container {
       display: flex;
@@ -75,6 +77,15 @@
     
     .mobile-nav-tabs {
       display: flex;
+    }
+
+    /* Brand logo sizing */
+    .brand-icon { width: 64px; height: 64px; background: transparent !important; }
+    .brand-icon img.brand-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
     
     /* Show desktop tabs and hide mobile tabs on larger screens */
@@ -159,8 +170,8 @@
       }
       
       .brand-icon {
-        width: 24px;
-        height: 24px;
+        width: 72px;
+        height: 72px;
       }
       
       .mobile-nav-tab {
@@ -173,6 +184,156 @@
         font-size: 11px;
       }
     }
+
+    /* Filters layout */
+    .filters {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    @media (min-width: 640px) {
+      .filters {
+        grid-template-columns: 1.5fr 1fr 1fr 1fr 0.5fr;
+        align-items: end;
+      }
+    }
+    .filters .form-group { margin: 0; }
+    .filters .form-label { font-size: 12px; color: var(--text-muted); }
+    /* Enhanced select/input appearance for filters */
+    .filters .form-input {
+      font-size: 16px; /* iOS: avoid zoom on focus */
+      line-height: 1.4;
+      padding: 10px 12px;
+    }
+    .filters .form-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      padding-right: 36px;
+      background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='%23838ba1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      transition: var(--transition);
+    }
+    /* Keep custom dropdown trigger at 16px too */
+    .custom-select-trigger { font-size: 16px; }
+    .filters .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+      outline: none;
+    }
+
+    /* Hide native select but keep it in the DOM for form submission */
+    .visually-hidden-select {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0 0 0 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* Custom dropdown popup styling */
+    .custom-select { position: relative; }
+    .custom-select.is-hidden { display: none !important; }
+    .custom-select-trigger {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--bg); color: var(--text);
+      cursor: pointer; transition: var(--transition);
+    }
+    .custom-select-trigger:focus { outline: none; border-color: var(--primary); box-shadow: var(--ring); }
+    .custom-select-trigger .label { color: var(--text); }
+    .custom-select-trigger .chevron { width: 16px; height: 16px; color: var(--text-muted); }
+    .custom-options {
+      position: absolute; left: 0; right: 0; top: calc(100% + 6px);
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); z-index: 50; max-height: 240px; overflow: auto; display: none;
+    }
+    .custom-select.open .custom-options { display: block; }
+    .custom-option { padding: 10px 12px; cursor: pointer; color: var(--text); }
+    .custom-option:hover, .custom-option[aria-selected="true"] { background: var(--bg-elev); }
+    .custom-option.is-active { background: rgba(30, 64, 175, 0.08); }
+    
+    /* Delete Confirmation Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+    }
+    .modal-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .modal-icon {
+      width: 36px; height: 36px; background: var(--danger); color:#fff;
+      display:grid; place-items:center; border-radius: var(--radius);
+    }
+    .modal-title { margin:0; font-size:18px; font-weight:600; color: var(--text); }
+    .modal-text { color: var(--text-muted); font-size: 14px; margin: 8px 0 0; }
+    .modal-actions { display:flex; gap:12px; margin-top:16px; }
+    .btn-danger-solid { background: var(--danger); color:#fff; border:1px solid var(--danger); }
+    
+    /* Mobile: render product list as cards */
+    @media (max-width: 640px) {
+      .table-container .data-table thead { display: none; }
+      .table-container .data-table,
+      .table-container .data-table tbody,
+      .table-container .data-table tr,
+      .table-container .data-table td {
+        display: block;
+        width: 100%;
+      }
+      .table-container .data-table tr {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 12px 12px;
+        margin-bottom: 12px;
+      }
+      .table-container .data-table td {
+        padding: 8px 0;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .table-container .data-table td[data-label]::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-muted);
+        flex: 0 0 40%;
+        max-width: 160px;
+      }
+      .table-container .data-table td .actions {
+        width: 100%;
+        justify-content: flex-end;
+        display: flex;
+        gap: 8px;
+      }
+      .table-container .data-table .item-name { font-weight: 600; }
+    }
   </style>
 </head>
 <body>
@@ -181,9 +342,7 @@
     <div class="container navbar-container">
       <div class="brand">
         <div class="brand-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-          </svg>
+          <img src="{% static 'logo.png' %}" alt="Magasin" class="brand-logo" />
         </div>
         <span>Magasin</span>
       </div>
@@ -299,13 +458,54 @@
       
       <!-- Products Section -->
       <section class="section" id="produits-section">
-        <div class="section-header">
-          <a href="{% url 'produit_creer' %}" class="btn btn-primary add-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>
-            Nouveau Produit
-          </a>
+        <div class="section-header" style="gap:16px; align-items: flex-start;">
+          <div class="header-actions" style="width:100%; display:flex; justify-content:flex-start;">
+            <a href="{% url 'produit_creer' %}" class="btn btn-primary add-button add-product-top">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+              Nouveau Produit
+            </a>
+          </div>
+          <form method="get" class="filters" action="{% url 'accueil' %}">
+            <div class="form-group">
+              <label class="form-label" for="search">Recherche</label>
+              <input id="search" name="search" type="text" value="{{ search|default:'' }}" placeholder="Nom, référence, observations..." class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="categorie">Catégorie</label>
+              <select id="categorie" name="categorie" class="form-select">
+                <option value="">Toutes</option>
+                {% for c in categories %}
+                  <option value="{{ c.id }}" {% if c.id|stringformat:'s' == categorie_id %}selected{% endif %}>{{ c.nom }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="localisation">Localisation</label>
+              <select id="localisation" name="localisation" class="form-select">
+                <option value="">Toutes</option>
+                {% for l in localisations %}
+                  <option value="{{ l.id }}" {% if l.id|stringformat:'s' == localisation_id %}selected{% endif %}>{{ l.nom }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="etat">État</label>
+              <select id="etat" name="etat" class="form-select">
+                <option value="">Tous</option>
+                {% for e in etats %}
+                  <option value="{{ e.id }}" {% if e.id|stringformat:'s' == etat_id %}selected{% endif %}>{{ e.nom }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group" style="display:flex; gap:8px;">
+              <button type="submit" class="btn btn-primary" style="flex:1;">
+                Rechercher
+              </button>
+              <a href="{% url 'accueil' %}" class="btn btn-secondary" style="flex:1; text-align:center;">Réinitialiser</a>
+            </div>
+          </form>
         </div>
         
         <div class="data-container">
@@ -314,21 +514,41 @@
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Nom du Produit</th>
+                    <th>Nom</th>
+                    <th>Référence / Modèle</th>
                     <th>Catégorie</th>
+                    <th>Localisation</th>
+                    <th>État</th>
+                    <th>Quantité</th>
+                    <th>Observations</th>
                     <th style="width: 200px; text-align: center;">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for p in produits %}
                   <tr>
-                    <td>
+                    <td data-label="Nom">
                       <div class="item-name">{{ p.nom }}</div>
                     </td>
-                    <td>
+                    <td data-label="Référence / Modèle">
+                      {{ p.reference_modele|default:"-" }}
+                    </td>
+                    <td data-label="Catégorie">
                       <div class="category-badge">{{ p.categorie.nom }}</div>
                     </td>
-                    <td>
+                    <td data-label="Localisation">
+                      <div class="category-badge" style="background: rgba(30,64,175,0.08); color: var(--primary); border-color: rgba(30,64,175,0.3);">{{ p.localisation.nom }}</div>
+                    </td>
+                    <td data-label="État">
+                      <div class="category-badge" style="background: rgba(217,119,6,0.08); color: var(--warning); border-color: rgba(217,119,6,0.3);">{{ p.etat.nom }}</div>
+                    </td>
+                    <td data-label="Quantité">
+                      {{ p.quantite }}
+                    </td>
+                    <td data-label="Observations">
+                      {{ p.observations|default:"-" }}
+                    </td>
+                    <td data-label="Actions">
                       <div class="actions">
                         <a href="{% url 'produit_modifier' p.pk %}" class="btn btn-sm btn-warning">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -366,6 +586,28 @@
       </section>
     </div>
   </main>
+  
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+        </div>
+        <h3 class="modal-title" id="deleteModalTitle">Confirmer la suppression</h3>
+      </div>
+      <p class="modal-text">Cette action est irréversible. Voulez-vous vraiment supprimer cet élément ?</p>
+      <form id="deleteForm" method="post" action="">
+        {% csrf_token %}
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Annuler</button>
+          <button type="submit" class="btn btn-danger btn-danger-solid" id="confirmDeleteBtn">Supprimer</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script>
     // Navigation functionality
@@ -406,14 +648,235 @@
       });
     });
     
-    // Delete confirmation
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.')) {
+    // Custom-styled dropdowns for filters
+    (function() {
+      function enhanceSelect(selectEl) {
+        if (!selectEl || selectEl.dataset.enhanced === '1') return;
+        selectEl.dataset.enhanced = '1';
+        selectEl.classList.add('visually-hidden-select');
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select';
+
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'custom-select-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'label';
+        const chevron = document.createElement('span');
+        chevron.className = 'chevron';
+        chevron.innerHTML = '&#9662;';
+        trigger.appendChild(labelSpan);
+        trigger.appendChild(chevron);
+
+        const list = document.createElement('div');
+        list.className = 'custom-options';
+        list.setAttribute('role', 'listbox');
+
+        Array.from(selectEl.options).forEach(opt => {
+          const item = document.createElement('div');
+          item.className = 'custom-option';
+          item.setAttribute('role', 'option');
+          item.setAttribute('data-value', opt.value);
+          item.textContent = opt.textContent;
+          if (opt.selected) {
+            item.setAttribute('aria-selected', 'true');
+            labelSpan.textContent = opt.textContent;
+          }
+          item.addEventListener('click', () => {
+            // update native select and label
+            selectEl.value = opt.value;
+            labelSpan.textContent = opt.textContent;
+            list.querySelectorAll('.custom-option[aria-selected="true"]').forEach(el => el.removeAttribute('aria-selected'));
+            item.setAttribute('aria-selected', 'true');
+            close();
+          });
+          list.appendChild(item);
+        });
+
+        function open() {
+          wrapper.classList.add('open');
+          trigger.setAttribute('aria-expanded', 'true');
+          document.addEventListener('mousedown', onDocClick);
+          document.addEventListener('keydown', onKey);
+        }
+        function close() {
+          wrapper.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+          document.removeEventListener('mousedown', onDocClick);
+          document.removeEventListener('keydown', onKey);
+        }
+        function onDocClick(e) { if (!wrapper.contains(e.target)) close(); }
+        function onKey(e) {
+          if (e.key === 'Escape') { e.preventDefault(); close(); }
+        }
+
+        trigger.addEventListener('click', () => {
+          if (wrapper.classList.contains('open')) close(); else open();
+        });
+
+        // Insert into DOM just after the select
+        selectEl.parentNode.insertBefore(wrapper, selectEl.nextSibling);
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(list);
+
+        // Initial label fallback
+        if (!labelSpan.textContent) {
+          const selOpt = selectEl.options[selectEl.selectedIndex];
+          labelSpan.textContent = selOpt ? selOpt.textContent : '—';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.filters select.form-select').forEach(enhanceSelect);
+      });
+    })();
+    
+    // Initialize custom selects for filters (Categorie, Localisation, État)
+    (function() {
+      function buildCustomSelect(selectEl) {
+        // Skip if already processed
+        if (selectEl.dataset.enhanced === '1') return;
+        selectEl.dataset.enhanced = '1';
+
+        // Hide native select but keep it for form post
+        selectEl.classList.add('visually-hidden-select');
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select';
+        wrapper.setAttribute('data-name', selectEl.name);
+
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'custom-select-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'label';
+        const chevron = document.createElement('span');
+        chevron.className = 'chevron';
+        chevron.innerHTML = '&#9662;';
+        trigger.appendChild(labelSpan);
+        trigger.appendChild(chevron);
+
+        const options = document.createElement('div');
+        options.className = 'custom-options';
+        options.setAttribute('role', 'listbox');
+
+        // Populate options
+        Array.from(selectEl.options).forEach((opt, idx) => {
+          const item = document.createElement('div');
+          item.className = 'custom-option';
+          item.setAttribute('role', 'option');
+          item.setAttribute('data-value', opt.value);
+          item.textContent = opt.textContent;
+          if (opt.selected) {
+            item.setAttribute('aria-selected', 'true');
+            labelSpan.textContent = opt.textContent || '—';
+          }
+          item.addEventListener('click', () => {
+            // Update native select
+            selectEl.value = opt.value;
+            // Update UI selection
+            options.querySelectorAll('.custom-option[aria-selected="true"]').forEach(el => el.removeAttribute('aria-selected'));
+            item.setAttribute('aria-selected', 'true');
+            labelSpan.textContent = opt.textContent || '—';
+            close();
+          });
+          options.appendChild(item);
+        });
+
+        function open() {
+          wrapper.classList.add('open');
+          trigger.setAttribute('aria-expanded', 'true');
+          document.addEventListener('mousedown', outsideClick);
+          document.addEventListener('keydown', onKey);
+        }
+        function close() {
+          wrapper.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+          document.removeEventListener('mousedown', outsideClick);
+          document.removeEventListener('keydown', onKey);
+        }
+        function outsideClick(e) { if (!wrapper.contains(e.target)) close(); }
+        function onKey(e) {
+          const items = Array.from(options.querySelectorAll('.custom-option'));
+          const current = options.querySelector('.custom-option[aria-selected="true"]');
+          let idx = Math.max(0, items.indexOf(current));
+          if (e.key === 'ArrowDown') { e.preventDefault(); idx = Math.min(items.length - 1, idx + 1); items[idx].click(); open(); }
+          if (e.key === 'ArrowUp')   { e.preventDefault(); idx = Math.max(0, idx - 1); items[idx].click(); open(); }
+          if (e.key === 'Escape')    { e.preventDefault(); close(); }
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); close(); }
+        }
+
+        trigger.addEventListener('click', () => {
+          if (wrapper.classList.contains('open')) close(); else open();
+        });
+
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(options);
+        // Insert after native select
+        selectEl.parentNode.insertBefore(wrapper, selectEl.nextSibling);
+
+        // Set initial label if none
+        if (!labelSpan.textContent) {
+          const selectedOpt = selectEl.options[selectEl.selectedIndex];
+          labelSpan.textContent = selectedOpt ? selectedOpt.textContent : '—';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.filters select.form-select').forEach(buildCustomSelect);
+      });
+    })();
+
+    // Delete confirmation modal
+    (function() {
+      const modal = document.getElementById('deleteModal');
+      const form = document.getElementById('deleteForm');
+      const cancelBtn = document.getElementById('cancelDeleteBtn');
+      let lastFocused = null;
+
+      function openModal(actionUrl) {
+        lastFocused = document.activeElement;
+        form.setAttribute('action', actionUrl);
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        // Focus the confirm button for accessibility
+        document.getElementById('confirmDeleteBtn').focus();
+        // Prevent background scroll (in case of long pages)
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      }
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
           e.preventDefault();
+          const href = this.getAttribute('href');
+          if (href) openModal(href);
+        });
+      });
+
+      cancelBtn.addEventListener('click', function() { closeModal(); });
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+          closeModal();
         }
       });
-    });
+    })();
     
     console.log('Dashboard initialized successfully!');
   </script>
