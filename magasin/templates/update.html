@@ -3,110 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modifier l'élément</title>
+  <title>Modifier l'élément - Magasin</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
   <style>
-    :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --warning: #f59e0b;
-      --warning-hover: #d97706;
-      --text-primary: #1e293b;
-      --text-secondary: #64748b;
-      --border: #e2e8f0;
-      --background: #f8fafc;
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      min-height: 100vh;
+    .form-page {
+      min-height: calc(100vh - var(--nav-h));
+      background: var(--bg-elev);
+      padding: 24px 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
     }
     
     .form-container {
-      background: white;
-      padding: 2.5rem;
-      border-radius: 20px;
-      box-shadow: var(--shadow);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
       width: 100%;
       max-width: 500px;
-      animation: slideIn 0.6s ease-out;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .form-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--warning), var(--warning-hover));
+      padding: 32px;
     }
     
     .form-header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 32px;
     }
     
     .form-icon {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--warning), var(--warning-hover));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1rem;
-      font-size: 1.5rem;
+      width: 48px;
+      height: 48px;
+      background: var(--warning);
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
       color: white;
-      animation: pulse 2s ease-in-out infinite;
     }
     
     .form-title {
-      font-size: 1.75rem;
-      font-weight: bold;
-      color: var(--text-primary);
-      margin-bottom: 0.5rem;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
     }
     
     .form-subtitle {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-size: 14px;
     }
     
     .object-info {
-      background: #fffbeb;
-      border: 1px solid #fed7aa;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 2rem;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 12px;
     }
     
     .object-info-icon {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       background: var(--warning);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
       color: white;
-      font-size: 1.2rem;
+      flex-shrink: 0;
     }
     
     .object-info-text {
@@ -114,235 +81,34 @@
     }
     
     .object-name {
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.25rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 2px;
     }
     
     .object-meta {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
+      font-size: 12px;
+      color: var(--text-muted);
     }
     
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    
-    .form-label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      position: relative;
-    }
-    
-    .form-label.required::after {
-      content: '*';
-      color: #ef4444;
-      margin-left: 0.25rem;
-    }
-    
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      background: white;
-      font-family: inherit;
-      position: relative;
-    }
-    
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      outline: none;
-      border-color: var(--warning);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-      transform: translateY(-1px);
-    }
-    
-    .form-textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-    
-    .form-select {
-      cursor: pointer;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-      background-position: right 0.75rem center;
-      background-repeat: no-repeat;
-      background-size: 1.5em 1.5em;
-      padding-right: 3rem;
-    }
-    
-    /* Change indicator */
-    .changed-indicator {
-      position: absolute;
-      right: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--warning);
-      font-size: 0.9rem;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .form-input.changed + .changed-indicator,
-    .form-select.changed + .changed-indicator,
-    .form-textarea.changed + .changed-indicator {
-      opacity: 1;
-    }
-    
-    .btn-group {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    
-    .btn {
-      flex: 1;
-      padding: 1rem;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, var(--warning), var(--warning-hover));
-      color: white;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-    
-    .btn-secondary {
-      background: var(--background);
-      color: var(--text-secondary);
-      border: 2px solid var(--border);
-    }
-    
-    .btn-secondary:hover {
-      background: var(--border);
-      transform: translateY(-1px);
-    }
-    
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-    
-    .btn-primary:hover::before {
-      left: 100%;
-    }
-    
-    .loading {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-    
-    .loading::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 20px;
-      height: 20px;
-      margin: -10px 0 0 -10px;
-      border: 2px solid transparent;
-      border-top: 2px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    /* Success notification */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--warning);
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      transform: translateX(400px);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-    }
-    
-    .notification.show {
-      transform: translateX(0);
-    }
-    
-    .notification .close-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.2rem;
-      cursor: pointer;
-      margin-left: 1rem;
-      opacity: 0.7;
-    }
-    
-    .notification .close-btn:hover {
-      opacity: 1;
-    }
-    
-    /* Form validation styles */
-    .form-input.error, .form-select.error, .form-textarea.error {
-      border-color: #ef4444;
-      background: #fef2f2;
-    }
-    
-    .error-message {
-      color: #ef4444;
-      font-size: 0.85rem;
-      margin-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    
-    /* Changes summary */
     .changes-summary {
-      background: #fffbeb;
-      border: 1px solid #fed7aa;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 2rem;
+      background: rgba(217, 119, 6, 0.1);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 24px;
       display: none;
     }
     
     .changes-summary.show {
       display: block;
-      animation: slideDown 0.3s ease;
     }
     
     .changes-title {
-      font-weight: 600;
-      color: var(--warning-hover);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-weight: 500;
+      color: var(--warning);
+      margin-bottom: 8px;
+      font-size: 14px;
     }
     
     .changes-list {
@@ -352,61 +118,134 @@
     }
     
     .changes-list li {
-      padding: 0.25rem 0;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
+      padding: 4px 0;
+      font-size: 13px;
+      color: var(--text-muted);
     }
     
-    /* Animations */
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
     }
     
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        max-height: 0;
-      }
-      to {
-        opacity: 1;
-        max-height: 200px;
-      }
+    .btn-full {
+      flex: 1;
+      padding: 12px 16px;
+      justify-content: center;
     }
     
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    /* Django form styling */
+    .django-form p {
+      margin-bottom: 20px;
+      position: relative;
     }
     
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+    .django-form label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text);
     }
     
-    /* Responsive Design */
+    .django-form input, 
+    .django-form select, 
+    .django-form textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      transition: var(--transition);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+    
+    .django-form input:focus, 
+    .django-form select:focus, 
+    .django-form textarea:focus {
+      outline: none;
+      border-color: var(--warning);
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.25);
+    }
+    
+    .django-form input.changed,
+    .django-form select.changed,
+    .django-form textarea.changed {
+      border-left: 4px solid var(--warning);
+    }
+    
+    .django-form select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23374151' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+    
+    .django-form textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .errorlist {
+      list-style: none;
+      margin: 6px 0 0 0;
+      padding: 0;
+    }
+    
+    .errorlist li {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    
+    .loading {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--warning);
+      color: white;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      z-index: 1001;
+      max-width: 300px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.error {
+      background: var(--danger);
+    }
+    
+    .notification.success {
+      background: var(--success);
+    }
+    
     @media (max-width: 480px) {
-      .form-container {
-        padding: 2rem;
-        margin: 1rem;
+      .form-page {
+        padding: 16px;
       }
       
-      .form-title {
-        font-size: 1.5rem;
+      .form-container {
+        padding: 24px;
       }
       
       .btn-group {
         flex-direction: column;
-      }
-      
-      .btn {
-        padding: 0.875rem;
       }
       
       .object-info {
@@ -414,103 +253,84 @@
         text-align: center;
       }
     }
-    
-    /* Custom Django form styling */
-    .django-form p {
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-    
-    .django-form label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    
-    .django-form input, .django-form select, .django-form textarea {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      background: white;
-      font-family: inherit;
-    }
-    
-    .django-form select {
-      cursor: pointer;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-      background-position: right 0.75rem center;
-      background-repeat: no-repeat;
-      background-size: 1.5em 1.5em;
-      padding-right: 3rem;
-    }
-    
-    .django-form input:focus, .django-form select:focus, .django-form textarea:focus {
-      outline: none;
-      border-color: var(--warning);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-      transform: translateY(-1px);
-    }
-    
-    .errorlist {
-      list-style: none;
-      margin: 0.5rem 0 0 0;
-      padding: 0;
-    }
-    
-    .errorlist li {
-      color: #ef4444;
-      font-size: 0.85rem;
-      margin-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    
-    .errorlist li::before {
-      content: '⚠️';
-    }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <div class="form-header">
-      <div class="form-icon">✏️</div>
-      <h2 class="form-title">Modifier l'élément</h2>
-      <p class="form-subtitle">Apportez vos modifications ci-dessous</p>
-    </div>
-    
-    <div class="object-info">
-      <div class="object-info-icon">📝</div>
-      <div class="object-info-text">
-        <div class="object-name">{{ object }}</div>
-        <div class="object-meta">Élément en cours de modification</div>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+          </svg>
+        </div>
+        <span>Magasin</span>
       </div>
-    </div>
-    
-    <div class="changes-summary" id="changesSummary">
-      <div class="changes-title">
-        📋 Modifications détectées
-      </div>
-      <ul class="changes-list" id="changesList"></ul>
-    </div>
-    
-    <form method="post" class="django-form" id="updateForm">
-      {% csrf_token %}
-      {{ form.as_p }}
       
-      <div class="btn-group">
-        <button type="submit" class="btn btn-primary" id="submitBtn">
-          💾 Mettre à jour
-        </button>
-        <a href="javascript:history.back()" class="btn btn-secondary">
-          ❌ Annuler
-        </a>
+      <div class="navbar-controls">
+        <form method="post" action="{% url 'deconnexion' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+            <span class="logout-text">Déconnexion</span>
+          </button>
+        </form>
       </div>
-    </form>
+    </div>
+  </nav>
+
+  <div class="form-page">
+    <div class="form-container">
+      <div class="form-header">
+        <div class="form-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+          </svg>
+        </div>
+        <h2 class="form-title">Modifier l'élément</h2>
+        <p class="form-subtitle">Apportez vos modifications ci-dessous</p>
+      </div>
+      
+      <div class="object-info">
+        <div class="object-info-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="object-info-text">
+          <div class="object-name">{{ object }}</div>
+          <div class="object-meta">Élément en cours de modification</div>
+        </div>
+      </div>
+      
+      <div class="changes-summary" id="changesSummary">
+        <div class="changes-title">Modifications détectées</div>
+        <ul class="changes-list" id="changesList"></ul>
+      </div>
+      
+      <form method="post" class="django-form" id="updateForm">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-warning btn-full" id="submitBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 013.75 3.75v1.875C14.25 7.206 15.044 8 16 8s1.75-.794 1.75-1.875V3.75A5.25 5.25 0 0012.5-1.5h-.375a3.375 3.375 0 00-3.375 3.375V3.75A.75.75 0 019.5 4.5v15a.75.75 0 01-.75.75H3a.75.75 0 01-.75-.75V4.5A.75.75 0 013 3.75h4.5z"/>
+            </svg>
+            Mettre à jour
+          </button>
+          <a href="javascript:history.back()" class="btn btn-secondary btn-full">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Annuler
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script>
@@ -520,7 +340,6 @@
       const changesSummary = document.getElementById('changesSummary');
       const changesList = document.getElementById('changesList');
       
-      // Store original values for change detection
       const originalValues = new Map();
       const inputs = form.querySelectorAll('input, select, textarea');
       
@@ -531,7 +350,6 @@
         }
       });
       
-      // Track changes
       function detectChanges() {
         const changes = [];
         let hasChanges = false;
@@ -548,8 +366,8 @@
               const label = input.closest('p')?.querySelector('label')?.textContent || input.name;
               changes.push({
                 field: label,
-                from: original,
-                to: current
+                from: original || '(vide)',
+                to: current || '(vide)'
               });
             } else {
               input.classList.remove('changed');
@@ -557,32 +375,25 @@
           }
         });
         
-        // Update changes summary
         if (hasChanges) {
           changesList.innerHTML = changes.map(change => 
             `<li><strong>${change.field}:</strong> "${change.from}" → "${change.to}"</li>`
           ).join('');
           changesSummary.classList.add('show');
-          submitBtn.style.background = 'linear-gradient(135deg, var(--warning), var(--warning-hover))';
         } else {
           changesSummary.classList.remove('show');
-          submitBtn.style.background = 'var(--border)';
-          submitBtn.style.color = 'var(--text-secondary)';
         }
         
         return hasChanges;
       }
       
-      // Form submission with validation
       form.addEventListener('submit', function(e) {
-        // Check if there are any changes
         if (!detectChanges()) {
           e.preventDefault();
-          showNotification('Aucune modification détectée', 'warning');
+          showNotification('Aucune modification détectée', 'error');
           return;
         }
         
-        // Basic client-side validation
         const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
         let isValid = true;
         
@@ -601,50 +412,26 @@
           return;
         }
         
-        // Show loading state
         submitBtn.classList.add('loading');
-        submitBtn.innerHTML = '⏳ Mise à jour en cours...';
+        submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Mise à jour en cours...';
         
-        // Show success notification after a short delay
         setTimeout(() => {
-          showNotification('✅ Élément mis à jour avec succès !', 'success');
+          showNotification('Élément mis à jour avec succès !', 'success');
         }, 500);
       });
       
-      // Input change detection and animations
       inputs.forEach(input => {
-        // Real-time change detection
         input.addEventListener('input', detectChanges);
         input.addEventListener('change', detectChanges);
         
-        // Focus effects
-        input.addEventListener('focus', function() {
-          this.parentElement.style.transform = 'translateY(-1px)';
-        });
-        
-        input.addEventListener('blur', function() {
-          this.parentElement.style.transform = 'translateY(0)';
-          
-          // Remove error state when user fixes the field
+        input.addEventListener('input', function() {
           if (this.classList.contains('error') && this.value.trim()) {
             this.classList.remove('error');
           }
         });
-        
-        // Enhanced visual feedback for changes
-        input.addEventListener('input', function() {
-          const original = originalValues.get(this.name);
-          if (original && original !== this.value) {
-            this.style.borderLeft = '4px solid var(--warning)';
-          } else {
-            this.style.borderLeft = 'none';
-          }
-        });
       });
       
-      // Keyboard shortcuts
       document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + S to save
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
           e.preventDefault();
           if (detectChanges()) {
@@ -652,13 +439,6 @@
           }
         }
         
-        // Ctrl/Cmd + Z to reset (undo changes)
-        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-          e.preventDefault();
-          resetForm();
-        }
-        
-        // Escape to cancel
         if (e.key === 'Escape') {
           if (detectChanges()) {
             if (confirm('Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter ?')) {
@@ -670,36 +450,6 @@
         }
       });
       
-      // Reset form to original values
-      function resetForm() {
-        inputs.forEach(input => {
-          if (originalValues.has(input.name)) {
-            input.value = originalValues.get(input.name);
-            input.classList.remove('changed', 'error');
-            input.style.borderLeft = 'none';
-          }
-        });
-        detectChanges();
-        showNotification('Formulaire réinitialisé', 'info');
-      }
-      
-      // Auto-save draft functionality (optional)
-      let autoSaveTimeout;
-      function autoSaveDraft() {
-        clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(() => {
-          if (detectChanges()) {
-            // You could implement draft saving here
-            console.log('Auto-saving draft...');
-          }
-        }, 2000);
-      }
-      
-      inputs.forEach(input => {
-        input.addEventListener('input', autoSaveDraft);
-      });
-      
-      // Warn before leaving with unsaved changes
       window.addEventListener('beforeunload', function(e) {
         if (detectChanges()) {
           e.preventDefault();
@@ -708,44 +458,24 @@
         }
       });
       
-      // Initial change detection
       setTimeout(detectChanges, 100);
-      
-      console.log('✏️ Formulaire de modification initialisé !');
     });
     
-    // Notification system
     function showNotification(message, type = 'success') {
-      // Remove existing notifications
       const existingNotifications = document.querySelectorAll('.notification');
       existingNotifications.forEach(n => n.remove());
       
-      // Create notification
       const notification = document.createElement('div');
-      notification.className = 'notification';
+      notification.className = `notification ${type}`;
       notification.innerHTML = `
         ${message}
-        <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;margin-left:8px;cursor:pointer;opacity:0.7">×</button>
       `;
-      
-      // Set color based on type
-      const colors = {
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#f59e0b',
-        info: '#3b82f6'
-      };
-      
-      if (colors[type]) {
-        notification.style.background = colors[type];
-      }
       
       document.body.appendChild(notification);
       
-      // Show notification
       setTimeout(() => notification.classList.add('show'), 100);
       
-      // Auto-remove after 4 seconds
       setTimeout(() => {
         if (notification.parentElement) {
           notification.classList.remove('show');
@@ -753,67 +483,6 @@
         }
       }, 4000);
     }
-    
-    // Enhanced form animations
-    function animateFormElements() {
-      const elements = document.querySelectorAll('.form-group, .object-info');
-      elements.forEach((element, index) => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-          element.style.transition = 'all 0.4s ease';
-          element.style.opacity = '1';
-          element.style.transform = 'translateY(0)';
-        }, index * 100);
-      });
-    }
-    
-    // Progressive enhancement features
-    function addProgressiveEnhancements() {
-      // Add tooltips for better UX
-      const tooltips = {
-        'required': 'Ce champ est obligatoire',
-        'changed': 'Ce champ a été modifié',
-        'error': 'Veuillez corriger cette erreur'
-      };
-      
-      // Auto-resize textareas
-      document.querySelectorAll('textarea').forEach(textarea => {
-        textarea.style.minHeight = textarea.scrollHeight + 'px';
-        textarea.addEventListener('input', function() {
-          this.style.height = 'auto';
-          this.style.height = this.scrollHeight + 'px';
-        });
-      });
-      
-      // Add character count for text inputs with maxlength
-      document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(field => {
-        const maxLength = field.getAttribute('maxlength');
-        const counter = document.createElement('div');
-        counter.style.fontSize = '0.8rem';
-        counter.style.color = 'var(--text-secondary)';
-        counter.style.textAlign = 'right';
-        counter.style.marginTop = '0.25rem';
-        
-        field.parentElement.appendChild(counter);
-        
-        function updateCounter() {
-          const remaining = maxLength - field.value.length;
-          counter.textContent = `${field.value.length}/${maxLength}`;
-          counter.style.color = remaining < 10 ? '#ef4444' : 'var(--text-secondary)';
-        }
-        
-        field.addEventListener('input', updateCounter);
-        updateCounter();
-      });
-    }
-    
-    // Initialize all enhancements
-    setTimeout(() => {
-      animateFormElements();
-      addProgressiveEnhancements();
-    }, 200);
   </script>
 </body>
 </html>
