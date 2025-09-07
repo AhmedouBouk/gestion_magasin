@@ -433,6 +433,8 @@
                           </svg>
                           Supprimer
                         </a>
+                        
+
                       </div>
                     </td>
                   </tr>
@@ -466,6 +468,32 @@
               </svg>
               Nouveau Produit
             </a>
+            <div style="display:flex; gap:8px; margin-left:8px; flex-wrap:wrap;">
+              <a
+                href="{% url 'produits_export_excel' %}?search={{ search|urlencode }}&categorie={{ categorie_id|urlencode }}&etat={{ etat_id|urlencode }}&localisation={{ localisation_id|urlencode }}"
+                class="btn btn-secondary"
+                title="Exporter en Excel (CSV)"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 2H8c-1.1 0-2 .9-2 2v3H5c-1.1 0-2 .9-2 2v9a2 2 0 002 2h9c1.1 0 2-.9 2-2v-1h3c1.1 0 2-.9 2-2V4a2 2 0 00-2-2zm0 12h-3V9H8V4h11v10zM9.5 19l-2.5-4 2.5-4h2L9.99 14l1.51 5h-2z"/>
+                </svg>
+                Export Excel
+              </a>
+              <a
+                href="{% url 'produits_export_pdf' %}?search={{ search|urlencode }}&categorie={{ categorie_id|urlencode }}&etat={{ etat_id|urlencode }}&localisation={{ localisation_id|urlencode }}"
+                class="btn btn-secondary"
+                title="Exporter en PDF"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 2H8a2 2 0 00-2 2v3H5a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2v-1h4a2 2 0 002-2V4a2 2 0 00-2-2zm0 12h-4V9H8V4h12v10zM9 18h2c1.657 0 3-1.343 3-3v-1h-2v1c0 .552-.448 1-1 1H9v2zm7-6h-2v4h2a1 1 0 001-1v-2a1 1 0 00-1-1z"/>
+                </svg>
+                Export PDF
+              </a>
+              <a href="{% url 'transferts_liste' %}" class="btn btn-secondary">
+                <!-- icône -->
+                Voir les transferts
+              </a>              
+            </div>
           </div>
           <form method="get" class="filters" action="{% url 'accueil' %}">
             <div class="form-group">
@@ -562,6 +590,13 @@
                           </svg>
                           Supprimer
                         </a>
+                        <a href="#"
+                            class="btn btn-sm btn-success transfer-open-btn"
+                            data-url="{% url 'produit_transferer' p.pk %}"
+                            data-produit="{{ p.nom }}">
+                            <!-- icône flèche -->
+                            Transférer
+                        </a>
                       </div>
                     </td>
                   </tr>
@@ -608,6 +643,39 @@
       </form>
     </div>
   </div>
+  <!-- Transfer Modal -->
+<div class="modal-overlay" id="transferModal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="transferModalTitle">
+    <div class="modal-header">
+      <div class="modal-icon" style="background: var(--success);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M5 12h11.17l-4.58 4.59L13 18l6-6-6-6-1.41 1.41L16.17 10H5v2z"/>
+        </svg>
+      </div>
+      <h3 class="modal-title" id="transferModalTitle">Transférer le produit</h3>
+    </div>
+
+    <p class="modal-text" id="transferModalSubtitle">Renseignez la ville de destination et le motif.</p>
+
+    <form id="transferForm" method="post" action="">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="transferVille">Ville</label>
+        <input id="transferVille" name="ville" type="text" class="form-input" placeholder="Ex : Nantes" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="transferMotif">Motif (optionnel)</label>
+        <textarea id="transferMotif" name="motif" class="form-textarea" rows="3" placeholder="Ex : réaffectation d'inventaire"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelTransferBtn">Annuler</button>
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
   <script>
     // Navigation functionality
@@ -876,6 +944,45 @@
           closeModal();
         }
       });
+    })();
+    (function () {
+      const modal = document.getElementById('transferModal');
+      const form = document.getElementById('transferForm');
+      const cancelBtn = document.getElementById('cancelTransferBtn');
+      const subtitle = document.getElementById('transferModalSubtitle');
+      let lastFocused = null;
+  
+      function openTransferModal(actionUrl, produitNom) {
+        lastFocused = document.activeElement;
+        form.setAttribute('action', actionUrl);
+        subtitle.textContent = `Produit : ${produitNom}`;
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.getElementById('transferVille').focus();
+        document.body.style.overflow = 'hidden';
+      }
+  
+      function closeTransferModal() {
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+        // reset simple
+        form.reset();
+      }
+  
+      document.querySelectorAll('.transfer-open-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          const url = this.getAttribute('data-url');
+          const nom = this.getAttribute('data-produit') || '—';
+          openTransferModal(url, nom);
+        });
+      });
+  
+      cancelBtn.addEventListener('click', closeTransferModal);
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeTransferModal(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('show')) closeTransferModal(); });
     })();
     
     console.log('Dashboard initialized successfully!');

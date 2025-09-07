@@ -1,5 +1,5 @@
 from django import forms
-from .models import Categorie, Produit, Localisation, Etat
+from .models import Categorie, Produit, Localisation, Etat , Transfert
 
 
 class FormulaireCategorie(forms.ModelForm):
@@ -41,3 +41,13 @@ class FormulaireProduit(forms.ModelForm):
             "quantite": forms.NumberInput(attrs={"min": 1}),
             "observations": forms.Textarea(attrs={"rows": 3, "placeholder": "Notes..."}),
         }
+
+class FormulaireTransfert(forms.ModelForm):
+    class Meta:
+        model = Transfert
+        fields = ["ville", "motif"]
+        widgets = {
+            "ville": forms.TextInput(attrs={"class": "form-input", "placeholder": "Ville de destination"}),
+            "motif": forms.Textarea(attrs={"class": "form-textarea", "placeholder": "Motif du transfert (optionnel)", "rows": 3}),
+        }
+        labels = {"ville": "Ville", "motif": "Motif"}

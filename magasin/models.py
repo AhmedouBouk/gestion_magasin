@@ -71,3 +71,16 @@ class Produit(models.Model):
 
     def __str__(self):
         return f"{self.nom} / {self.categorie} / {self.localisation}"
+
+class Transfert(models.Model):
+    produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name='transferts')
+    # ⚠️ on n’utilise PAS 'localisation' existante : on stocke la VILLE (texte libre)
+    ville = models.CharField(max_length=120)
+    motif = models.TextField(blank=True)
+    cree_le = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-cree_le']
+
+    def __str__(self):
+        return f"Transfert {self.produit} → {self.ville} ({self.cree_le:%Y-%m-%d %H:%M})"

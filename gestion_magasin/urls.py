@@ -21,4 +21,10 @@ urlpatterns = [
     path("produits/creer/", v.ProduitCreer.as_view(), name="produit_creer"),
     path("produits/<int:pk>/modifier/", v.ProduitModifier.as_view(), name="produit_modifier"),
     path("produits/<int:pk>/supprimer/", v.produit_supprimer, name="produit_supprimer"),
+    path("produits/export/excel/", v.produits_export_excel, name="produits_export_excel"),
+    path("produits/export/pdf/", v.produits_export_pdf, name="produits_export_pdf"),
+    # magasin/urls.py
+    path("transferts/", v.TransfertListeView.as_view(), name="transferts_liste"),
+    path("produits/<int:pk>/transferer/", v.transfert_creer, name="produit_transferer"),
+
 ]

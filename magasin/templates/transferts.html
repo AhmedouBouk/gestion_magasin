@@ -1,0 +1,117 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Historique des transferts</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <style>
+    /* Ajustements légers pour garder la même tête que home.html */
+    .navbar-container{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap}
+    .brand{flex-shrink:0;min-width:fit-content}
+    .brand-icon{width:64px;height:64px;background:transparent!important}
+    .brand-icon .brand-logo{width:100%;height:100%;object-fit:contain;display:block}
+    .navbar-controls{flex-shrink:0;min-width:fit-content}
+    .main-content{padding:24px 16px}
+    .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+    .section-title{font-size:20px;font-weight:700;color:var(--text)}
+    @media (min-width: 640px){.main-content{padding:24px}}
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <img src="{% static 'logo.png' %}" alt="Magasin" class="brand-logo">
+        </div>
+        <span>Magasin</span>
+      </div>
+      <div class="navbar-controls">
+        <a href="{% url 'accueil' %}" class="btn btn-secondary">← Retour</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenu -->
+  <main class="main-content">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Historique des transferts</h2>
+        <div class="header-actions" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="category-badge" title="Nombre total de transferts">{{ transferts|length }} transferts</span>
+        </div>
+      </div>
+
+      <div class="data-container">
+        {% if transferts %}
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date &amp; heure</th>
+                  <th>Produit</th>
+                  <th>Référence / Modèle</th>
+                  <th>Catégorie</th>
+                  <th>Localisation (magasin)</th>
+                  <th>État</th>
+                  <th>Quantité</th>
+                  <th>Observations</th>
+                  <th>Ville (destination)</th>
+                  <th>Motif</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for t in transferts %}
+                <tr>
+                  <td data-label="Date &amp; heure">{{ t.cree_le|date:"Y-m-d H:i" }}</td>
+                  <td data-label="Produit">{{ t.produit.nom }}</td>
+                  <td data-label="Référence / Modèle">{{ t.produit.reference_modele|default:"-" }}</td>
+
+                  <td data-label="Catégorie">
+                    {% if t.produit.categorie_id %}
+                      <div class="category-badge">{{ t.produit.categorie.nom }}</div>
+                    {% else %}-{% endif %}
+                  </td>
+
+                  <td data-label="Localisation">
+                    {% if t.produit.localisation_id %}
+                      <div class="category-badge" style="background: rgba(30,64,175,0.08); color: var(--primary); border-color: rgba(30,64,175,0.3);">
+                        {{ t.produit.localisation.nom }}
+                      </div>
+                    {% else %}-{% endif %}
+                  </td>
+
+                  <td data-label="État">
+                    {% if t.produit.etat_id %}
+                      <div class="category-badge" style="background: rgba(217,119,6,0.08); color: var(--warning); border-color: rgba(217,119,6,0.3);">
+                        {{ t.produit.etat.nom }}
+                      </div>
+                    {% else %}-{% endif %}
+                  </td>
+
+                  <td data-label="Quantité">{{ t.produit.quantite }}</td>
+                  <td data-label="Observations">{{ t.produit.observations|default:"-" }}</td>
+                  <td data-label="Ville (destination)">{{ t.ville }}</td>
+                  <td data-label="Motif">{{ t.motif|default:"-" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M5 12h11.17l-4.58 4.59L13 18l6-6-6-6-1.41 1.41L16.17 10H5v2z"/></svg>
+            </div>
+            <h3 class="empty-title">Aucun transfert</h3>
+            <p class="empty-description">Les transferts apparaîtront ici avec toutes les informations du produit.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</body>
+</html>
