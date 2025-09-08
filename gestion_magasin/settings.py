@@ -134,10 +134,15 @@ TIME_ZONE = "Africa/Nouakchott"
 USE_I18N = True
 USE_TZ = True
 
-# --- Fichiers statiques ---
-STATIC_URL = "static/"
-# Pour du CSS/JS/image locaux hors apps (facultatif) :
-STATICFILES_DIRS = [BASE_DIR / "static"]  # crée BASE_DIR/static si tu en as besoin
-# En prod (collectstatic) tu définirais aussi STATIC_ROOT (voir plus bas)
+STATIC_URL = "/static/"
+
+# Where collectstatic will gather all files for production
+STATIC_ROOT = BASE_DIR / "static_collected"
+
+# (Optional) Extra static folders you want Django to also scan
+# Example: if you create a global "static" folder at the root
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
